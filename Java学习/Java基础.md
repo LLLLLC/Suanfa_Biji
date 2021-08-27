@@ -432,14 +432,22 @@ String s5 = new String("Runoob");   // String 对象创建
 
 ### 8.1 数组常用的操作
 
-数组的创建方法：
+#### 8.11 Java返回数组长度
+
+```java
+array.length
+```
+
+
+
+#### 8.12 数组的创建方法：
 
 ```java
 dataType[] arrayRefVar = new dataType[arraySize];
 dataType[] arrayRefVar = {value0, value1, ..., valuek};
 ```
 
-数组转换为list和set：
+#### 8.13 数组转换为list和set：
 
 ```java
 List<Integer> arrayList = new ArrayList<>();
@@ -452,7 +460,7 @@ Set<Integer> set = new HashSet<>(arrayList);
 System.out.println(set);
 ```
 
-<u>**重要：数组排序的方法**</u>
+#### 8.14 <u>**重要：数组排序的方法**</u>
 
 1. `Arrays.sort(int[] a) // 对一个数组的所有元素进行排序，并且是按从小到大的顺序`
 
@@ -508,7 +516,7 @@ System.out.println(set);
 
    
 
-多维数组：
+#### 8.15 多维数组：
 
 ```java
 //  直接为每一维分配空间
