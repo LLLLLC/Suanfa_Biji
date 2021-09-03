@@ -1499,3 +1499,8 @@ public class RunoobTest {
 
 ![image-20210825174133800](./images/image-20210825174133800.png)
 
+## 16.Java 排序
+
+### 16.1 数组的排序
+
+`int`数组无法实现`Comparator`方法，因此，数组如果需要排序，需要直接使用`Arrays.sort()`方法。
