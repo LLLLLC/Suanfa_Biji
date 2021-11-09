@@ -58,3 +58,184 @@
 
 - 经常查询并且不经常改变的数据。
 
+### 1.3.4 Mybatis缓存有哪些？
+
+- MyBatis包含一个非常强大的查询缓存特性，它可以非常方便地定制和配置缓存。缓存可以极大的提升查询效率。
+
+- MyBatis系统中默认定义了两级缓存：**一级缓存**和**二级缓存**
+
+- - 默认情况下，只有一级缓存开启。（SqlSession级别的缓存，也称为本地缓存）
+  - 二级缓存需要手动开启和配置，他是基于namespace级别的缓存。
+  - 为了提高扩展性，MyBatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存
+
+> 一级缓存，SqlSession,SqlSession关闭了之后就立即消失。
+>
+> 耳机缓存，对应Mapper。
+
+### 1.3.5 一级缓存
+
+一级缓存也叫本地缓存：
+
+- 与数据库同一次会话期间查询到的数据会放在本地缓存中。
+- 以后如果需要获取相同的数据，直接从缓存中拿，没必须再去查询数据库；
+
+### 1.3.6 一级缓存失效的几种情况
+
+- sqlSession不同
+
+  ```java
+  @Test
+  public void testQueryUserById(){
+     SqlSession session = MybatisUtils.getSession();
+     SqlSession session2 = MybatisUtils.getSession();
+     UserMapper mapper = session.getMapper(UserMapper.class);
+     UserMapper mapper2 = session2.getMapper(UserMapper.class);
+  
+     User user = mapper.queryUserById(1);
+     System.out.println(user);
+     User user2 = mapper2.queryUserById(1);
+     System.out.println(user2);
+     System.out.println(user==user2);
+  
+     session.close();
+     session2.close();
+  }
+  ```
+
+- sqlSession相同，查询条件不同
+
+  ```java
+  @Test
+  public void testQueryUserById(){
+     SqlSession session = MybatisUtils.getSession();
+     UserMapper mapper = session.getMapper(UserMapper.class);
+     UserMapper mapper2 = session.getMapper(UserMapper.class);
+  
+     User user = mapper.queryUserById(1);
+     System.out.println(user);
+     User user2 = mapper2.queryUserById(2);
+     System.out.println(user2);
+     System.out.println(user==user2);
+  
+     session.close();
+  }
+  ```
+
+- sqlSession相同，两次查询之间执行了增删改操作！
+
+  ```java
+  @Test
+  public void testQueryUserById(){
+     SqlSession session = MybatisUtils.getSession();
+     UserMapper mapper = session.getMapper(UserMapper.class);
+  
+     User user = mapper.queryUserById(1);
+     System.out.println(user);
+  
+     HashMap map = new HashMap();
+     map.put("name","kuangshen");
+     map.put("id",4);
+     mapper.updateUser(map);
+  
+     User user2 = mapper.queryUserById(1);
+     System.out.println(user2);
+  
+     System.out.println(user==user2);
+  
+     session.close();
+  }
+  ```
+
+  结论：**因为增删改操作可能会对当前数据产生影响**
+
+- sqlSession相同，手动清除一级缓存
+
+  ```java
+  @Test
+  public void testQueryUserById(){
+     SqlSession session = MybatisUtils.getSession();
+     UserMapper mapper = session.getMapper(UserMapper.class);
+  
+     User user = mapper.queryUserById(1);
+     System.out.println(user);
+  
+     session.clearCache();//手动清除缓存
+  
+     User user2 = mapper.queryUserById(1);
+     System.out.println(user2);
+  
+     System.out.println(user==user2);
+  
+     session.close();
+  }
+  ```
+
+### 1.3.7 二级缓存
+
+- 二级缓存也叫全局缓存，一级缓存作用域太低了，所以诞生了二级缓存
+
+- 基于namespace级别的缓存，一个名称空间，对应一个二级缓存；
+
+- 工作机制
+
+- - 一个会话查询一条数据，这个数据就会被放在当前会话的一级缓存中；
+  - 如果当前会话关闭了，这个会话对应的一级缓存就没了；但是我们想要的是，会话关闭了，一级缓存中的数据被保存到二级缓存中；
+  - 新的会话查询信息，就可以从二级缓存中获取内容；
+  - 不同的mapper查出的数据会放在自己对应的缓存（map）中；
+
+### 1.3.8 如何开启二级缓存
+
+1、开启全局缓存 【mybatis-config.xml】
+
+```xml
+<setting name="cacheEnabled" value="true"/>
+```
+
+2、去每个mapper.xml中配置使用二级缓存，这个配置非常简单；【xxxMapper.xml】
+
+```xml
+<cache/>
+
+官方示例=====>查看官方文档
+<cache
+ eviction="FIFO"
+ flushInterval="60000"
+ size="512"
+ readOnly="true"/>
+这个更高级的配置创建了一个 FIFO 缓存，每隔 60 秒刷新，最多可以存储结果对象或列表的 512 个引用，而且返回的对象被认为是只读的，因此对它们进行修改可能会在不同线程中的调用者产生冲突。
+```
+
+3、代码测试
+
+- 所有的实体类先实现序列化接口
+- 测试代码
+
+```java
+@Test
+public void testQueryUserById(){
+   SqlSession session = MybatisUtils.getSession();
+   SqlSession session2 = MybatisUtils.getSession();
+
+   UserMapper mapper = session.getMapper(UserMapper.class);
+   UserMapper mapper2 = session2.getMapper(UserMapper.class);
+
+   User user = mapper.queryUserById(1);
+   System.out.println(user);
+   session.close();
+
+   User user2 = mapper2.queryUserById(1);
+   System.out.println(user2);
+   System.out.println(user==user2);
+
+   session2.close();
+}
+```
+
+### 1.3.9 二级缓存的特点
+
+- 只要开启了二级缓存，我们在同一个Mapper中的查询，可以在二级缓存中拿到数据
+- 查出的数据都会被默认先放在一级缓存中
+- 只有会话提交或者关闭以后，一级缓存中的数据才会转到二级缓存中
+
+<img src="../Java学习/images/微信图片_20211109113932.jpg" alt="微信图片_20211109113932.jpg" style="zoom: 67%;" />
+
