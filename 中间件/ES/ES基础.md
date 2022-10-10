@@ -46,7 +46,7 @@
 
 ## 1.4 更新
 
-`POST(PUT) indices/type/id(/_update 可选)`
+`POST(PUT) indices/type/id(/_update 可选) ?if_seq_no=0&if_primary_term=1`
 
 ## 1.5 批量处理
 
@@ -79,6 +79,27 @@ POST customer/external/_bulk
 {
     "title":"My first blog post"
 }
-
+{
+    "index":{
+        "_index":"website",
+        "_type":"blog"
+    }
+}
+{
+    "title":"My second blog post"
+}
+{
+    "update":{
+        "_index":"website",
+        "_type":"blog",
+        "_id":"123",
+        "_retry_on_conflict":3
+    }
+}
+{
+    "doc":{
+        "title":"My updated blog post"
+    }
+}
 ```
 
