@@ -248,7 +248,7 @@ OK
 
 # 2.Redis 生产问题
 
-## 2.1 缓存击穿
+## 2.1 缓存穿透
 
 https://javaguide.cn/database/redis/redis-questions-02.html#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F
 
