@@ -97,3 +97,43 @@ ef64f10 (HEAD -> BlueLake_theme) HEAD@{0}: commit: 新增ethereum-programming-in
 
 ## 2.4 从某个分支拉取新分支
 
+## 2.5 对不同的gitlab，设置不同的SSH 密钥
+
+来源：https://blog.51cto.com/u_15061944/4276047
+
+在.ssh/下创建config文件 内容如下：
+
+```bash
+Host gitlab.inodes.cn
+HostName gitlab.inodes.cn
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_rsa
+
+Host github.com
+HostName github.com
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/my_github
+```
+
+config基本写法:
+
+```bash
+Host myhost（这里是自定义的host简称，以后连接远程服务器就可以用命令ssh myhost）[注意下面有缩进]
+User 登录用户名(如：git)
+HostName 主机名可用ip也可以是域名(如:github.com或者bitbucket.org)
+Port 服务器open-ssh端口（默认：22,默认时一般不写此行）
+IdentityFile 证书文件路径（如~/.ssh/id_rsa_*)
+```
+
+## 2.6 列出 git 的配置信息
+
+```shell
+git config --list
+```
+
+## 2.7 测试 ssh 密钥的连接
+
+```shell
+ssh -T git@github.com
+```
+
