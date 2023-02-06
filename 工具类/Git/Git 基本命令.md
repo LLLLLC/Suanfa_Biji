@@ -91,6 +91,10 @@ ef64f10 (HEAD -> BlueLake_theme) HEAD@{0}: commit: 新增ethereum-programming-in
 
 ## 2.1 合并commit
 
+> 直接可以通过工具进行合并
+>
+> 命令行应该是通过 git rebase -i 的操作来合并
+
 ## 2.2 回退版本
 
 ## 2.3 回退rebase reset revert
