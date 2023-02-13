@@ -117,6 +117,22 @@ protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 	}
 ```
 
+## 1.6 Spring 自动装配
+
+> 根据@Resource 注解内的说明指出，在Spring 中 对于字段注释，默认值为字段名称。对于方法注解，缺省值是与该方法对应的 JavaBeans 属性名称。对于类注释，没有默认值，必须指定。
+>
+> 因此，如果使用@Resouce 或者 @Qualifier 指定 装备的Bean, 需要给需要装配的Bean 取名字
+>
+> ------
+>
+> Spring 自动注入都需要实体类，接口是无法自动注入的，如果能自动注入那肯定是经过AOP，切入了实体类。如果有多个实体类继承了接口，就需要指明是用哪个实体类了。
+>
+> 自动装配注解：
+>
+> @Resource （属于J2EE复返），默认按照名称进行装配
+>
+> @AutoWired 默认按类型装配（属于spring规范）
+
 # 2. Spring AOP
 
  `Spring`的`AOP`实现原理其实很简单，就是通过**动态代理**实现的。如果我们为`Spring`的某个`bean`配置了切面，那么`Spring`在创建这个`bean`的时候，实际上创建的是这个`bean`的一个代理对象，我们后续对`bean`中方法的调用，实际上调用的是代理类重写的代理方法。而`Spring`的`AOP`使用了两种动态代理，分别是**JDK的动态代理**，以及**CGLib的动态代理**。
