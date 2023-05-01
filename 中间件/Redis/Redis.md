@@ -246,6 +246,84 @@ OK
 2) "value2"
 ```
 
+## 1.3 Redis 序列化
+
+Spring提供的Redis数据结构的操作类
+
+- `ValueOperations` 类，提供 Redis String API 操作
+- `ListOperations` 类，提供 Redis List API 操作
+- `SetOperations` 类，提供 Redis Set API 操作
+- `ZSetOperations` 类，提供 Redis ZSet(Sorted Set) API 操作
+- `GeoOperations` 类，提供 Redis Geo API 操作
+- `HyperLogLogOperations` 类，提供 Redis HyperLogLog API 操作
+
+常用的 序列化方式
+
+- JDK 序列化方式 （默认）
+- String 序列化方式
+- JSON 序列化方式
+- XML 序列化方式
+
+![9a2f0857fcf24833583849f0a60215b0.pngt.png](C:..\..\Java学习\images\9a2f0857fcf24833583849f0a60215b0.png)
+
+默认是采用
+
+ **JDK `Serializer`：**
+
+![e5ddf11dae102c16209153115424a70e.png](C:..\..\Java学习\images\e5ddf11dae102c16209153115424a70e.png)
+
+**StringRedisSerializer**
+
+`RedisTemplate` 支持泛型，`StringRedisTemplate` K V 均为String类型。(一般的序列化方式，字符串和二进制数组的直接转换)
+
+`org.springframework.data.redis.core.StringRedisTemplate` 继承 RedisTemplate 类，使用 `org.springframework.data.redis.serializer.StringRedisSerializer` 字符串序列化方式。
+
+<img src="C:..\..\Java学习\images\c8c9354365d73ae4a3e77ed60facce69.png" alt="c8c9354365d73ae4a3e77ed60facce69.png" style="zoom:50%;" />
+
+**JSON 序列化方式**
+
+有两种JSON序列化方式：
+
+- Jackson2JsonRedisSerializer
+- GenericJackson2JsonRedisSerializer
+
+区别可以参见：https://gitee.com/fengzxia/spring-boot-redis-cache/blob/master/Jackson%20Serializer%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98.md
+
+`OaMapper` 可以参见：
+
+https://developer.aliyun.com/article/907869
+
+https://juejin.cn/post/7114118797979549709
+
+> Jackson2JsonRedisSerializer  需要指定序列化的class，序列化也需要 JSON 发序列化，较为复杂，而且效率比较低。
+>
+> GenericJackson2JsonRedisSerializer 不需要指定序列化对象，使用较多，可能会把类的全类名 序列进去
+
+`org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer` 使用 Jackson 实现 JSON 的序列化方式，并且从 Generic 单词可以看出，是支持所有类。
+
+诸如：
+
+```json
+{
+  "id": 100,
+  "name": "小工匠",
+  "sex": "Male"
+}
+```
+
+可以序列化为：
+
+```json
+{
+  "@class": "com.artisan.domain.Artisan",
+  "id": 100,
+  "name": "小工匠",
+  "sex": "Male"
+}
+```
+
+
+
 # 2.Redis 生产问题
 
 ## 2.1 缓存穿透
