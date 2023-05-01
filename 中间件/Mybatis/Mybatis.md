@@ -254,7 +254,71 @@ public void testQueryUserById(){
 - 查出的数据都会被默认先放在一级缓存中
 - 只有会话提交或者关闭以后，一级缓存中的数据才会转到二级缓存中
 
-<img src="../Java学习/images/微信图片_20211109113932.jpg" alt="微信图片_20211109113932.jpg" style="zoom: 67%;" />
+<img src="../../Java学习/images/微信图片_20211109113932.jpg" alt="微信图片_20211109113932.jpg" style="zoom: 67%;" />
+
+## 1.6 SpringBoot 使用Mybatis 分页插件
+
+引入依赖：
+
+```xml
+		<!--分页插件-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-autoconfigure</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <!--分页插件-->
+```
+
+yaml 配置：
+
+```yaml
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+```
+
+```java
+@RequestMapping("/agentList")
+public ModelAndView agentList(HttpServletRequest request, Integer pageNum, Integer      
+ pageSize) throws Exception {
+ 
+        ModelAndView mv = new ModelAndView("myAgent");
+ 
+        User user = (User) request.getSession().getAttribute("user");
+        if(pageNum == null){
+            pageNum = 1;
+        }
+        if(pageSize == null){
+            pageSize = 6;
+        }
+        //使用分页插件
+        PageHelper.startPage(pageNum , pageSize);
+ 
+        List<Map> list = agentService.agentList(user.getId()); //获取后台数据列表（根据自己系统修改）
+ 
+        //根据查询的数据列表，得到分页的结果对象
+        PageInfo<Map> pageList = new PageInfo<Map>(list); 
+        List<Map> datas = pageList.getList(); 
+        mv.addObject("datas", datas);
+        return mv;
+    }
+```
+
+
 
 ## 1.7 ${}和#{} 复制方式有什么不同之处
 
