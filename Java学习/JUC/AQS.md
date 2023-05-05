@@ -1,22 +1,34 @@
 # 1. LockSupport
 
-1.1 park() / park(Object blocker)
+## 1.1 API 参考
 
-阻塞当前线程/阻塞传入的具体线程
+- park() / park(Object blocker)
 
-## 1.2 unpark(Thread thread)
+  阻塞当前线程/阻塞传入的具体线程
 
-唤醒处于阻塞状态的指定线程
+- unpark(Thread thread)
 
-> park 和 unpark 先后顺序可以不一致
+  唤醒处于阻塞状态的指定线程
+
+  > park 和 unpark 先后顺序可以不一致
 
 Q: 为什么可以先唤醒线程后阻塞线程？
 
 因为unpark获得了一个凭证，在之后再调用park方法，就可以名正言顺的消费，因此不会阻塞
 
+> 因为 `Unpark` 可以让 permit 先为1，然后 park 的时候就直接让信号量的值从1变为0
+
 # 2. AQS
 
 https://blog.csdn.net/oneby1314/article/details/113789332
+
+Q: 简单谈以下自己对 AQS 的理解？
+
+> AQS，全程为 抽象队列同步器，AbstractQueneSynchoronized。
+>
+> 实现，Syn，具体实现，FairSyn，NoFairSyn。
+>
+> 具体使用到的类，ReentrantLock，Sympore，栅栏，闭锁countdwon等
 
 ## 2.1 前置知识
 
