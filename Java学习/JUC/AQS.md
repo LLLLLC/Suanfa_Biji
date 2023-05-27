@@ -1,6 +1,6 @@
-# 1. LockSupport
+# 1. API 参考
 
-## 1.1 API 参考
+## 1.1 LockSupport 
 
 - park() / park(Object blocker)
 
@@ -18,6 +18,10 @@ Q: 为什么可以先唤醒线程后阻塞线程？
 
 > 因为 `Unpark` 可以让 permit 先为1，然后 park 的时候就直接让信号量的值从1变为0
 
+## 1.2 UnSafe 类
+
+
+
 # 2. AQS
 
 https://blog.csdn.net/oneby1314/article/details/113789332
@@ -29,6 +33,12 @@ Q: 简单谈以下自己对 AQS 的理解？
 > 实现，Syn，具体实现，FairSyn，NoFairSyn。
 >
 > 具体使用到的类，ReentrantLock，Sympore，栅栏，闭锁countdwon等
+>
+> 方法调用链：lock -> tryAquire -> qunue -> addwaiter
+>
+> 非公平锁：尝试获取锁，加入到队尾，设置前一个节点 waitStatus 为 -1，阻塞自己等待唤醒，lockSupport.park
+>
+> 公平锁：查看是否队列有等待的，如果有，加入队尾，如果没有，则尝试抢占锁
 
 ## 2.1 前置知识
 
@@ -208,7 +218,7 @@ nonfairTryAcquire(acquires) 正常的执行流程：
 
 ![3851eff834cbd93d53d620e1aa5142c8.png](../images/3851eff834cbd93d53d620e1aa5142c8.png)
 
-#### **执行 `ddWaiter(Node.EXCLUSIVE)` 方法**
+#### **执行 `addWaiter(Node.EXCLUSIVE)` 方法**
 
 在 `tryAcquire()` 方法返回 `false` 之后，进行 `!` 操作后为 `true`，那么会继续执行 `addWaiter()` 方法
 
