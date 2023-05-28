@@ -591,3 +591,57 @@ https://mp.weixin.qq.com/s?__biz=MzIyOTYxNDI5OA==&mid=2247487312&idx=1&sn=fa1956
 
 > OOM 错误 `used memory > maxmemory`
 
+## 2.6 Redis 如何删除大Key?
+
+> <u>为什么删除大Key需要另外考虑？</u>
+>
+> 因为Redis 是单线程的，删除大Key的时间可能非常耗时，可能Redis 阻塞，这是非常危险的事情
+>
+> 
+>
+> <u>网上看了很多，大概都是这样的方案</u>
+>
+> 1. 先把Key 逻辑删除，就是把Key改名字，这样避免key被访问大。然后每次取一部分删除。具体取一部分的命令有 sscan hscan ltrim 等
+>
+> 2. Unlink 方法，如果key的值过大，会把删除操作交给后台程序运行，实行懒删除策略
+>
+>    unlink 在命名空间把key先删除掉，然后交给后台线程执行真正的删除操作
+>
+> 3. 此外，Redis 内部也有懒删除的方法，比如 TTL 为0后，执行 lazyFree 策略
+
+
+
+参考：
+
+> 这几个说的都一般
+>
+> https://zhuanlan.zhihu.com/p/59511903
+>
+> https://juejin.cn/post/6844903983526477838
+>
+> https://toutiao.io/posts/50yn2h/preview
+
+## 2.7 LRU / LFU 算法
+
+参考：
+
+https://www.yuque.com/hollis666/hgtuok/gl3fivks74z4d10e
+
+https://juejin.cn/post/6844904049263771662
+
+## 2.8 一致性哈希算法
+
+参考：https://juejin.cn/post/6844903750860013576
+
+https://xiaolincoding.com/os/8_network_system/hash.html#%E6%80%BB%E7%BB%93
+
+> 谈一下什么是一致性Hash算法？
+>
+> 为了解决在分布式场景下，数据读写都在一个节点的问题，可以使用 Hash 算法保证，同一数据的读写必然是在同一个节点。算法， hash(a) mod size
+>
+> 但是存在以下问题：
+>
+> - 如果有一个节点挂了，或者下线了，那么Hash 不是不会命中？
+> - 如果新增一个节点，节点的size是不是要增加，这个时候怎么办？难道还要数据迁移吗？
+>
+> 这个时候就需要 一致性Hash算法了。一直性Hash算法使用一个轮询盘 大小2^32，每个节点是会落一定范围内的数据。
