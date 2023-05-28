@@ -1,8 +1,16 @@
+# 0. 序
+
+## 0.1 存在的问题
+
+- Spring 用到了哪些设计模式？
+
 # 1. Spring IOC
 
 ## 1.1 Spring Bean生命周期
 
 参考：https://www.cnblogs.com/zrtqsk/p/3735273.html
+
+详细源码参考：https://javadoop.com/post/spring-ioc#toc_5
 
 > 主要是，实例化，属性注入，Aware接口感知，Postprocessor，init-method，Disposable，destory-method
 
@@ -387,9 +395,9 @@ Spring 5:
 
 ![循环依赖.png](../images/循环依赖.png)
 
+## 3.3 问题
 
-
-**Q：为什么是三级缓存，而不是二级缓存？**
+### **Q：为什么是三级缓存，而不是二级缓存？**
 
 A : https://zhuanlan.zhihu.com/p/496273636
 
@@ -404,6 +412,8 @@ spring:
     main:
       allow-circular-references: true
 ```
+
+### Q：为什么一级缓存要用 cocurrentHashMap?
 
 # 6. SpringSecurity
 
